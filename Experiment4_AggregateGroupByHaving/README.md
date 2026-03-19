@@ -1,190 +1,213 @@
-# Experiment 4: Aggregate Functions, Group By and Having Clause
+# Experiment 5: Subqueries and Views
 
 ## AIM
-To study and implement aggregate functions, GROUP BY, and HAVING clause with suitable examples.
+To study and implement subqueries and views.
 
 ## THEORY
 
-### Aggregate Functions
-These perform calculations on a set of values and return a single value.
+### Subqueries
+A subquery is a query inside another SQL query and is embedded in:
+- WHERE clause
+- HAVING clause
+- FROM clause
 
-- **MIN()** – Smallest value  
-- **MAX()** – Largest value  
-- **COUNT()** – Number of rows  
-- **SUM()** – Total of values  
-- **AVG()** – Average of values
+**Types:**
+- **Single-row subquery**:
+  Sub queries can also return more than one value. Such results should be made use along with the operators in and any.
+- **Multiple-row subquery**:
+  Here more than one subquery is used. These multiple sub queries are combined by means of ‘and’ & ‘or’ keywords.
+- **Correlated subquery**:
+  A subquery is evaluated once for the entire parent statement whereas a correlated Sub query is evaluated once per row processed by the parent statement.
 
-**Syntax:**
+**Example:**
 ```sql
-SELECT AGG_FUNC(column_name) FROM table_name WHERE condition;
+SELECT * FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
 ```
-### GROUP BY
-Groups records with the same values in specified columns.
-**Syntax:**
+### Views
+A view is a virtual table based on the result of an SQL SELECT query.
+**Create View:**
 ```sql
-SELECT column_name, AGG_FUNC(column_name)
-FROM table_name
-GROUP BY column_name;
+CREATE VIEW view_name AS
+SELECT column1, column2 FROM table_name WHERE condition;
 ```
-### HAVING
-Filters the grouped records based on aggregate conditions.
-**Syntax:**
+**Drop View:**
 ```sql
-SELECT column_name, AGG_FUNC(column_name)
-FROM table_name
-GROUP BY column_name
-HAVING condition;
+DROP VIEW view_name;
 ```
 
 **Question 1**
 --
 
-<img width="1200" height="571" alt="image" src="https://github.com/user-attachments/assets/84fa19c6-0af0-4923-9e96-94729cf48d8e" />
+<img width="1194" height="735" alt="image" src="https://github.com/user-attachments/assets/a0d1f83b-bff7-4134-9d3d-69cb764197d3" />
 
 
 ```sql
-select avg(purch_amt) as AVERAGE from orders;
+select t1.student_name, t1.grade from GRADES t1
+JOIN (
+    SELECT subject, max(grade) as max_grade
+    from GRADES
+    GROUP BY subject
+) t2
+on t1.subject=t2.subject and t1.grade=t2.max_grade;
 ```
 
 **Output:**
 
-<img width="1202" height="435" alt="image" src="https://github.com/user-attachments/assets/eae9f53a-f625-4edb-aca0-0fc2333a4724" />
+<img width="1199" height="554" alt="image" src="https://github.com/user-attachments/assets/873d786c-655c-4879-92e2-75f6c4d1677a" />
 
 **Question 2**
 ---
 
-<img width="1195" height="547" alt="image" src="https://github.com/user-attachments/assets/38eb2a61-e8c5-4dbb-878c-1f1e556e102f" />
+<img width="1190" height="770" alt="image" src="https://github.com/user-attachments/assets/f65cfaa7-2cb4-4211-9806-6743230620c5" />
+
 
 ```sql
-select (max(price)-min(price)) as price_diff from fruits;
+select * from Employee
+where age < (select avg(age) from Employee
+where income>250000);
 ```
 
 **Output:**
 
-<img width="1199" height="423" alt="image" src="https://github.com/user-attachments/assets/a8b74089-7364-4948-9394-761231fe18c5" />
+<img width="1205" height="660" alt="image" src="https://github.com/user-attachments/assets/1f388d3a-4711-4968-a7eb-3ba8aa0c2e3d" />
 
 **Question 3**
 ---
 
-<img width="1191" height="521" alt="image" src="https://github.com/user-attachments/assets/0848656f-5c09-4af9-ad67-2e34dfed98ec" />
-
+<img width="1198" height="725" alt="image" src="https://github.com/user-attachments/assets/374b15c7-4701-4a21-aa03-677a5375642a" />
 
 ```sql
-select avg(length(email)) as avg_email_length_below_30 from customer
-where city in ('Mumbai');
+select t.student_name, t.grade from GRADES t
+JOIN (
+    SELECT subject , min(grade) as min_grade from GRADES
+    GROUP BY subject
+) t2
+ON t.subject=t2.subject and t.grade=t2.min_grade;
 ```
 
 **Output:**
 
-<img width="1197" height="428" alt="image" src="https://github.com/user-attachments/assets/b1316147-211d-48ad-ba7c-0eb1702172ad" />
+<img width="1198" height="558" alt="image" src="https://github.com/user-attachments/assets/3a544e61-7ac6-4efb-863c-ddb857f9c694" />
 
 **Question 4**
 ---
 
-<img width="1204" height="728" alt="image" src="https://github.com/user-attachments/assets/5d9c0658-800a-4535-be15-078c679a7699" />
+<img width="1197" height="616" alt="image" src="https://github.com/user-attachments/assets/44dd4c70-c23c-4a61-a126-c42eb2ea5238" />
+
 
 ```sql
-select InsuranceCompany, count(*) as TotalExpiredPatients from Insurance
-group by InsuranceCompany;
-
+select t.* from customer t
+JOIN (
+    select city,max(id) from customer
+    
+) t2
+on t.city != t2.city;
 ```
 
 **Output:**
 
-<img width="1203" height="799" alt="image" src="https://github.com/user-attachments/assets/2cbe5b86-20c3-4bb1-b3d1-1932be8d53ff" />
+<img width="1198" height="628" alt="image" src="https://github.com/user-attachments/assets/4db1d143-cca0-4c38-b554-ecb731452405" />
 
 **Question 5**
 ---
 
-<img width="1197" height="647" alt="image" src="https://github.com/user-attachments/assets/38b76945-5ee0-4b66-be0e-4fb0990e7081" />
+<img width="1198" height="539" alt="image" src="https://github.com/user-attachments/assets/742ca414-40de-4815-88f2-998ba2465cf4" />
 
 
 ```sql
-select strftime("%Y",ValidityPeriod) as ValidityYear, count(*) as TotalPatients from Insurance
-group by strftime("%Y",ValidityPeriod);
+select medication_id as medic, medication_name, dosage from Medications 
+where dosage = (select min(dosage) from Medications);
 ```
 
 **Output:**
 
-<img width="1199" height="510" alt="image" src="https://github.com/user-attachments/assets/a2b73c8c-8b21-4447-b3b6-9bb63873a9e1" />
+<img width="1194" height="519" alt="image" src="https://github.com/user-attachments/assets/a2579b68-82a8-487b-bffa-f5bb904ad307" />
 
 **Question 6**
 ---
 
-<img width="1202" height="658" alt="image" src="https://github.com/user-attachments/assets/a0114dd7-3c4a-4cf4-9329-7569c5b3350f" />
+<img width="1196" height="654" alt="image" src="https://github.com/user-attachments/assets/f8ef7e35-cfe6-468f-a4b6-2a20d8c9cc4a" />
+
 
 ```sql
-select PatientID, count(*) as TotalAppointments from Appointments
-group by PatientID;
+select t.name from customer t
+join (
+    select phone,count(id),name from customer
+    group by phone
+    having count(id)=1
+) t2
+on t.name=t2.name;
 ```
 
 **Output:**
 
-<img width="1202" height="755" alt="image" src="https://github.com/user-attachments/assets/d3856fab-d247-439c-b036-3b1c9edbdf0b" />
+<img width="1194" height="582" alt="image" src="https://github.com/user-attachments/assets/1c0e4342-dea6-4c95-9ba8-fc23ea128913" />
 
 **Question 7**
 ---
 
-<img width="1203" height="602" alt="image" src="https://github.com/user-attachments/assets/ac6bd411-e6cc-4ca1-84eb-71223111534d" />
+<img width="1199" height="561" alt="image" src="https://github.com/user-attachments/assets/91470fb5-facc-426a-9cf4-78b1f678f3d5" />
 
 
 ```sql
-SELECT age, min(Income) as Income from employee
-group by age
-having min(Income)<1000000;
+select t1.ord_no, t1.purch_amt, t1.ord_date, t1.salesman_id from orders t1
+JOIN (
+    select salesman_id, max(commission) from salesman
+) t2
+on t1.salesman_id=t2.salesman_id;
 ```
 
 **Output:**
 
-<img width="1202" height="561" alt="image" src="https://github.com/user-attachments/assets/8c9a85b4-f444-4094-80a8-7a52655104e7" />
+<img width="1199" height="608" alt="image" src="https://github.com/user-attachments/assets/c6f9feb1-3d40-4df2-8d85-2c4e56f535d0" />
 
 **Question 8**
 ---
 
-<img width="1202" height="547" alt="image" src="https://github.com/user-attachments/assets/011daffa-23a5-41b9-9893-19a453273ee1" />
+<img width="1200" height="712" alt="image" src="https://github.com/user-attachments/assets/c711f35d-2cdf-49bf-b58f-cec6111b6660" />
 
 
 ```sql
-select age, MAX(income) from employee
-group by age
-having max(income)>2000000;
+select * from Orders
+where salesman_id in (select salesman_id from Salesman where name = 'Paul Adam');
 ```
 
 **Output:**
 
-<img width="1201" height="477" alt="image" src="https://github.com/user-attachments/assets/f163e7ff-6591-483d-8d12-b5caf53f341c" />
+<img width="1198" height="534" alt="image" src="https://github.com/user-attachments/assets/af0ae023-3ad9-43aa-b2a2-f3b3859a848c" />
 
 **Question 9**
 ---
 
-<img width="1202" height="611" alt="image" src="https://github.com/user-attachments/assets/1ed39449-b6f6-49f0-9de5-3b91e2cc2e08" />
+<img width="1195" height="751" alt="image" src="https://github.com/user-attachments/assets/5add1f1c-ecb9-4ecd-a402-efb54c61327b" />
 
 
 ```sql
-select occupation , MIN(workhour) from employee1
-group by occupation
-having min(workhour)>8;
+select * from CUSTOMERS
+WHERE SALARY <2500;
 ```
 
 **Output:**
 
-<img width="1195" height="609" alt="image" src="https://github.com/user-attachments/assets/9f7b7adf-23c6-4878-843f-10bf97bbc1c0" />
+<img width="1199" height="594" alt="image" src="https://github.com/user-attachments/assets/5f3703ad-3b1a-489a-80bd-89831b6f8ae8" />
 
 **Question 10**
 ---
 
-<img width="1197" height="588" alt="image" src="https://github.com/user-attachments/assets/ed61cd89-9063-4f95-9462-1bb0f6e65d72" />
+<img width="1198" height="745" alt="image" src="https://github.com/user-attachments/assets/9dd97949-67a6-4e5c-812a-e60d069253d2" />
 
 
 ```sql
-select city, AVG(income) from employee
-group by city
-having avg(income)>500000;
+select commission from salesman
+where salesman_id in (select salesman_id from customer
+where city = 'Paris');
 ```
 
 **Output:**
 
-<img width="1198" height="557" alt="image" src="https://github.com/user-attachments/assets/330a9445-cc4b-4148-85eb-c9dae2029336" />
+<img width="1197" height="453" alt="image" src="https://github.com/user-attachments/assets/570079f7-08fb-4d00-9e83-d5f4da3da01b" />
+
 
 ## RESULT
-Thus, the SQL queries to implement aggregate functions, GROUP BY, and HAVING clause have been executed successfully.
+Thus, the SQL queries to implement subqueries and views have been executed successfully.
